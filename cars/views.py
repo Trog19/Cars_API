@@ -1,8 +1,10 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Car
 from .serializers import CarSerializer
+
 
 
 @api_view(['GET', 'POST'])
@@ -19,6 +21,10 @@ def cars_list(request):
 
 @api_view(['GET'])
 def car_detail(request, pk):
-
-    print(pk)
-    return Response(pk)
+    try:
+        car = Car.objects.get(pk=pk)
+        serializer = CarSerializer(car);
+        return Response(serializer.data)
+    except Car.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND);
+    
